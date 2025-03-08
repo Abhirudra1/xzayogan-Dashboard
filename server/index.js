@@ -11,7 +11,7 @@ const PORT = process.env.PORT || 5000;
 // Middleware
 app.use(cors(
     {
-        origin: 'http://localhost:5000',
+        origin: 'https://xzayogan-dashboard-api.vercel.app/',
         credentials: true,
         methods: ['GET', 'POST', 'PUT', 'DELETE'],
     }
