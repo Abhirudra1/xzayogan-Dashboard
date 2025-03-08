@@ -5,7 +5,10 @@ import axios from 'axios';
 export default function LoginPage({ onLoginSuccess }) {
     const handleGoogleSuccess = async (response) => {
         try {
-            const res = await axios.post('http://localhost:5000/api/auth/google', {
+            // const res = await axios.post('http://localhost:5000/api/auth/google', {
+            //     token: response.credential,
+            // });
+            const res = await axios.post('xzayogan-dashboard-api.vercel.app/api/auth/google', {
                 token: response.credential,
             });
 
