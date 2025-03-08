@@ -1,0 +1,7 @@
+.blur-background {
+    background-color: rgba(127, 255, 212, 0.285);
+    height: 100vh;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+}
