@@ -3,30 +3,33 @@ const cors = require('cors');
 const jwt = require('jsonwebtoken');
 const { OAuth2Client } = require('google-auth-library');
 const dotenv = require('dotenv');
+const mongoose = require('mongoose');
+const User = require('./models/User');
 
 dotenv.config();
 const app = express();
 const PORT = process.env.PORT || 5000;
 
 // Middleware
-app.use(cors(
-    {
-        origin: 'https://xzayogan-dashboard-api.vercel.app/',
-        credentials: true,
-        methods: ['GET', 'POST', 'PUT', 'DELETE'],
-    }
-));
+app.use(cors());
 app.use(express.json());
+
+// Connect to MongoDB
+mongoose.connect(process.env.MONGO_URI, {
+    useNewUrlParser: true,
+    useUnifiedTopology: true,
+}).then(() => {
+    console.log('Connected to MongoDB');
+}).catch((error) => {
+    console.error('Error connecting to MongoDB:', error);
+});
 
 // Google OAuth Client
 const client = new OAuth2Client(process.env.GOOGLE_CLIENT_ID);
 
-// Mock database for users
-const users = [];
-
 // Generate JWT Token
 const generateToken = (user) => {
-    return jwt.sign({ id: user.id, email: user.email }, process.env.JWT_SECRET, { expiresIn: '1h' });
+    return jwt.sign({ id: user._id, email: user.email }, process.env.JWT_SECRET, { expiresIn: '1d' });
 };
 
 // Verify Google Token
@@ -47,12 +50,12 @@ app.post('/api/auth/google', async (req, res) => {
         const { email, name, picture } = payload;
 
         // Check if user exists in the database
-        let user = users.find((u) => u.email === email);
+        let user = await User.findOne({ email });
 
         if (!user) {
             // Create a new user
-            user = { id: users.length + 1, email, name, picture };
-            users.push(user);
+            user = new User({ email, name, picture });
+            await user.save();
         }
 
         // Generate JWT token
